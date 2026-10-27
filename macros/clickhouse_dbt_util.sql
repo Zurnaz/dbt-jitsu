@@ -1,9 +1,5 @@
 {% macro clickhouse__hash(field) %}
-    hex(MD5(cast({{field}} as {{dbt_utils.type_string()}})))
-{% endmacro %}
-
-{% macro clickhouse__type_string() %}
-    varchar
+    hex(MD5(cast({{field}} as {{ dbt.type_string() }})))
 {% endmacro %}
 
 {% macro clickhouse__datediff(first_date, second_date, datepart) %}

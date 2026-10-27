@@ -41,7 +41,7 @@ with pageviews_sessionized as (
     select events.* from {{ref('jitsu_events_plus_session_id')}} events
     {% if is_incremental() %}
     , (select max(session_start_timestamp) as ts from {{ this }}) maxts
-    where {{ dbt_utils.datediff('events._timestamp', 'maxts.ts', 'minute') }} <= {{ var('jitsu_sessionization_trailing_window') }}
+    where {{ dbt.datediff('events._timestamp', 'maxts.ts', 'minute') }} <= {{ var('jitsu_sessionization_trailing_window') }}
     {% endif %}
 
 ),
@@ -81,7 +81,7 @@ diffs as (
 
         *,
 
-        {{ dbt_utils.datediff('session_start_timestamp', 'session_end_timestamp', 'second') }} as duration_in_s
+        {{ dbt.datediff('session_start_timestamp', 'session_end_timestamp', 'second') }} as duration_in_s
 
     from agg
 

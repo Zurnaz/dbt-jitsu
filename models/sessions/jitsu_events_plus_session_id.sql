@@ -13,7 +13,7 @@ with pageviews as (
     where user_anonymous_id in (
     select distinct events.user_anonymous_id
     from {{ref('jitsu_events')}} events, (select max(_timestamp) as ts from {{ this }}) maxts
-    where {{ dbt_utils.datediff('events._timestamp', 'maxts.ts', 'minute') }} <= {{ var('jitsu_sessionization_trailing_window') }}
+    where {{ dbt.datediff('events._timestamp', 'maxts.ts', 'minute') }} <= {{ var('jitsu_sessionization_trailing_window') }}
     )
     {% endif %}
 
@@ -56,7 +56,7 @@ diffed as (
 
     select
     *,
-    {{ dbt_utils.datediff('previous_timestamp', '_timestamp', 'second') }} as period_of_inactivity
+    {{ dbt.datediff('previous_timestamp', '_timestamp', 'second') }} as period_of_inactivity
     from lagged
 
     ),
@@ -106,7 +106,7 @@ session_ids as (
 
     {{dbt_utils.star(ref('jitsu_events'))}},
     pageview_number,
-    {{dbt_utils.surrogate_key(['user_anonymous_id', 'session_number'])}} as session_id
+    {{ dbt_utils.generate_surrogate_key(['user_anonymous_id', 'session_number']) }} as session_id
 
     from session_numbers
 
